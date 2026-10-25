@@ -367,9 +367,11 @@ export class Motor {
     const posicion = this.menuVR?.position.clone();
     this.cerrarMenuVR();
     this.menuVR = this.crearPanelFrente(canvas, 3, 2.6, posicion);
+    // Zona (miniatura o botón) bajo un punto del menú; la mirada cuenta el tiempo por zona
+    const zonaEn = uv => uv ? zonas.findIndex(z => uv.x >= z.x0 && uv.x <= z.x1 && 1 - uv.y >= z.y0 && 1 - uv.y <= z.y1) : -1;
+    this.menuVR.userData.zonaEn = zonaEn;
     this.menuVR.userData.alActivar = uv => {
-      const x = uv.x, y = 1 - uv.y;
-      const z = zonas.find(z => x >= z.x0 && x <= z.x1 && y >= z.y0 && y <= z.y1);
+      const z = zonas[zonaEn(uv)];
       if (!z) return;
       if (z.accion === "ir") { this.cerrarMenuVR(); elegir(z.id); }
       else if (z.accion === "cerrar") this.cerrarMenuVR();
@@ -496,7 +498,7 @@ export class Motor {
       if (performance.now() - (ultimo?.t || 0) > 80) this.inercia = { yaw: 0, pitch: 0 };
       const esClic = inicio && Math.hypot(ev.clientX - inicio.x, ev.clientY - inicio.y) < 7 && performance.now() - inicio.t < 600;
       if (esClic && ev.type === "pointerup") {
-        if (this.modo === "cardboard") this.activar(this.objetivoMirada);   // botón del visor Cardboard
+        if (this.modo === "cardboard") this.activar(this.objetivoMirada, this.uvMirada);   // botón del visor Cardboard
         else {
           const r = this.enPantalla(ev.clientX, ev.clientY);
           this.al.clic?.({ yaw: r.yaw, pitch: r.pitch, punto: r.objeto?.userData.punto, objeto: r.objeto, uv: r.uv });
@@ -619,7 +621,7 @@ export class Motor {
       c.addEventListener("selectstart", () => {
         const hit = c.userData.modo === "tracked-pointer" ? this.rayoControlador(c) : null;
         if (hit) this.activar(hit.object, hit.uv);
-        else if (c.userData.modo !== "tracked-pointer") this.activar(this.objetivoMirada);
+        else if (c.userData.modo !== "tracked-pointer") this.activar(this.objetivoMirada, this.uvMirada);
       });
       c.addEventListener("squeezestart", () => this.al.menuVR?.());
       this.escena3d.add(c);
@@ -663,15 +665,20 @@ export class Motor {
       this.camara.getWorldPosition(this.raycaster.ray.origin);
       this.camara.getWorldDirection(this.raycaster.ray.direction);
     }
-    const obj = this.raycaster.intersectObjects(this.interactivos(), false)[0]?.object || null;
-    if (obj !== this.objetivoMirada) { this.objetivoMirada = obj; this.inicioMirada = ahora; }
+    const hit = this.raycaster.intersectObjects(this.interactivos(), false)[0];
+    const obj = hit?.object || null;
+    this.uvMirada = hit?.uv;  // en el menú indica qué miniatura se está mirando
+    const zona = obj?.userData.zonaEn ? obj.userData.zonaEn(hit.uv) : null;
+    const clave = obj ? obj.uuid + ":" + zona : null;
+    if (clave !== this.claveMirada) { this.claveMirada = clave; this.objetivoMirada = obj; this.inicioMirada = ahora; }
     let p = 0;
-    // Los banners sin enlace no se activan con la mirada (solo se leen)
-    const activable = obj && (obj.userData.alActivar || obj.userData.punto?.tipo !== "banner" || obj.userData.punto?.enlace);
+    // Los banners sin enlace no se activan con la mirada (solo se leen); en el menú, solo sobre una miniatura o botón
+    const activable = obj && (obj.userData.zonaEn ? zona >= 0
+      : obj.userData.alActivar || obj.userData.punto?.tipo !== "banner" || obj.userData.punto?.enlace);
     if (activable) {
       this.resaltados.add(obj);
       p = Math.min(1, (ahora - this.inicioMirada) / TIEMPO_MIRADA);
-      if (p >= 1) { this.inicioMirada = Infinity; this.activar(obj); p = 0; }
+      if (p >= 1) { this.inicioMirada = Infinity; this.activar(obj, hit.uv); p = 0; }
     }
     if (Math.abs(p - (this.progresoAnterior || 0)) > 0.02 || (p === 0 && this.progresoAnterior)) {
       this.progreso.geometry.dispose();
@@ -783,7 +790,7 @@ export class Motor {
     } else if (this.modo === "cardboard") this.actualizarMirada(ahora);
     for (const o of this.interactivos()) {
       const base = o.userData.escalaBase ||= o.scale.clone();
-      const objetivo = this.resaltados.has(o) ? 1.15 : 1;
+      const objetivo = this.resaltados.has(o) && o !== this.menuVR && o !== this.panel3D ? 1.15 : 1;
       if (Math.abs(o.scale.x / base.x - objetivo) > 0.005) { o.scale.copy(base).multiplyScalar(objetivo); animando = true; }
     }
 
