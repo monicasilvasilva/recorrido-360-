@@ -1,0 +1,13 @@
+# Netlify: cabeceras de caché (GitHub Pages ignora este archivo)
+/escenas/*
+  Cache-Control: public, max-age=604800
+/vendor/*
+  Cache-Control: public, max-age=31536000, immutable
+/tour.json
+  Cache-Control: no-cache
+/js/*
+  Cache-Control: no-cache
+/css/*
+  Cache-Control: no-cache
+/descarga/*
+  Content-Disposition: attachment

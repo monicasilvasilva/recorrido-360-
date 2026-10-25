@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1117">
+<title>Recorrido virtual 360</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="iconos/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Recorrido 360">
+<link rel="modulepreload" href="vendor/three.module.min.js">
+<link rel="stylesheet" href="css/estilos.css">
+<script type="importmap">
+  { "imports": { "three": "./vendor/three.module.min.js" } }
+</script>
+</head>
+<body data-modo="normal">
+<div id="visor"></div>
+<div id="capa-puntos"></div>
+<div id="cargando"><div class="girando" aria-label="Cargando"></div></div>
+
+<div id="cabecera" class="vidrio">
+  <div class="tour" id="tour-titulo"></div>
+  <h1 id="escena-titulo">Cargando…</h1>
+  <div class="grupo" id="escena-grupo"></div>
+</div>
+
+<div id="controles">
+  <button class="btn-ico" id="b-menu" title="Todas las escenas (M)" aria-label="Todas las escenas">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <button class="btn-ico oculto" id="b-vr" title="Ver en gafas VR (Meta Quest…)" aria-label="Ver en gafas VR"><span class="txt">VR</span></button>
+  <button class="btn-ico oculto" id="b-cardboard" title="Modo Cardboard" aria-label="Modo Cardboard">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v10h-6l-2-3h-2l-2 3H3z"/><circle cx="8" cy="11.5" r="1.5"/><circle cx="16" cy="11.5" r="1.5"/></svg></button>
+  <button class="btn-ico oculto" id="b-giro" title="Mover con el celular" aria-label="Mover con el celular">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></button>
+  <button class="btn-ico oculto" id="b-sonido" title="Silenciar / activar sonido" aria-label="Sonido">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path class="ondas" d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/><path class="tachado oculto" d="m22 9-6 6M16 9l6 6"/></svg></button>
+  <button class="btn-ico" id="b-rotar" title="Giro automático (R)" aria-label="Giro automático">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg></button>
+  <button class="btn-ico" id="b-pantalla" title="Pantalla completa (F)" aria-label="Pantalla completa">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+  <button class="btn-ico" id="b-compartir" title="Compartir esta escena" aria-label="Compartir">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+  <button class="btn-ico" id="b-descargar" title="Descargar para usar sin conexión" aria-label="Descargar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 19h16"/></svg></button>
+  <button class="btn-ico" id="b-tira" title="Mostrar u ocultar miniaturas" aria-label="Miniaturas">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="14" width="7" height="6" rx="1"/><rect x="14" y="14" width="7" height="6" rx="1"/><path d="M3 9h18"/></svg></button>
+  <button class="btn-ico oculto" id="b-editar" title="Editar recorrido (E)" aria-label="Editar recorrido">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+</div>
+
+<div id="tira" class="vidrio">
+  <button class="flecha-tira" id="b-anterior" title="Escena anterior (P)" aria-label="Anterior">‹</button>
+  <div id="tira-lista"></div>
+  <button class="flecha-tira" id="b-siguiente" title="Escena siguiente (N)" aria-label="Siguiente">›</button>
+</div>
+
+<aside id="menu" class="panel" aria-label="Escenas">
+  <header><h2>Escenas</h2><button class="cerrar" data-cerrar="menu" aria-label="Cerrar">×</button></header>
+  <div class="cuerpo">
+    <input id="buscar" type="search" placeholder="Buscar escena…" autocomplete="off">
+    <div id="menu-lista"></div>
+  </div>
+</aside>
+
+<aside id="editor" class="panel" aria-label="Editor">
+  <header><h2>Editor del recorrido</h2><button class="cerrar" data-cerrar="editor" aria-label="Cerrar">×</button></header>
+  <div class="cuerpo" id="editor-cuerpo"></div>
+  <footer><span id="estado-guardado">Sin cambios</span><button class="btn primario" id="b-guardar">Guardar</button></footer>
+</aside>
+
+<div id="colocando" class="oculto"><span id="colocando-texto"></span><button id="b-cancelar-colocar">Cancelar</button></div>
+<div id="mira" class="oculto"></div>
+<div id="modal" class="oculto"><div class="caja vidrio" role="dialog" aria-modal="true">
+  <img id="modal-imagen" alt="" class="oculto">
+  <h3 id="modal-titulo"></h3><p id="modal-texto"></p>
+  <audio id="modal-audio" controls class="oculto"></audio>
+  <div class="fila"><a id="modal-enlace" class="btn" target="_blank" rel="noopener">Abrir enlace</a><span style="flex:1"></span><button class="btn primario" id="modal-cerrar">Cerrar</button></div>
+</div></div>
+<div id="dialogo-descarga" class="oculto"><div class="caja vidrio" role="dialog" aria-modal="true">
+  <header class="fila"><h3 style="flex:1">Usar sin conexión</h3><button class="cerrar" data-cerrar-dialogo aria-label="Cerrar">×</button></header>
+
+  <section id="sec-guardar">
+    <p>Guarda el recorrido en este dispositivo (celular, gafas VR o PC) para verlo <b>sin internet</b>.</p>
+    <div id="descarga-estado" class="estado-descarga"></div>
+    <div id="descarga-opciones">
+      <label class="opcion"><input type="radio" name="calidad" value="estandar" checked>
+        <span><b>Estándar</b> · <span data-peso="estandar"></span><br><span class="nota">Recomendada para celular y gafas VR</span></span></label>
+      <label class="opcion"><input type="radio" name="calidad" value="maxima">
+        <span><b>Máxima</b> · <span data-peso="maxima"></span><br><span class="nota">Calidad original con zoom, ocupa más</span></span></label>
+      <p class="nota" id="descarga-espacio"></p>
+    </div>
+    <div id="descarga-progreso" class="oculto"><div class="progreso"><div></div></div><p class="nota" id="descarga-texto"></p></div>
+    <div class="fila">
+      <button class="btn peligro oculto" id="b-borrar-descarga">Borrar del dispositivo</button>
+      <span style="flex:1"></span>
+      <button class="btn oculto" id="b-cancelar-descarga">Cancelar</button>
+      <button class="btn primario" id="b-iniciar-descarga">Descargar</button>
+    </div>
+  </section>
+
+  <section id="sec-instalar" class="oculto">
+    <h4>Instalar como app</h4>
+    <p class="nota" id="instalar-texto">Queda con su propio ícono y se abre en pantalla completa, sin barra del navegador.</p>
+    <div class="fila"><button class="btn" id="b-instalar">Instalar app</button></div>
+  </section>
+
+  <section id="sec-zip" class="oculto">
+    <h4>Copia para computador (ZIP)</h4>
+    <p class="nota">Para pasar por USB o usar en otro PC: descomprime y abre <b>ABRIR RECORRIDO.bat</b> (<span id="zip-tamano"></span>).</p>
+    <div class="fila"><a class="btn" href="descarga/recorrido-360.zip" download>Descargar ZIP</a></div>
+  </section>
+
+  <p class="nota oculto" id="sin-soporte">Para guardar el recorrido sin conexión, ábrelo desde la dirección publicada (https://…) en Chrome, Edge, Safari o el navegador del Quest.</p>
+</div></div>
+<button id="salir-inmersivo" class="oculto">✕ Salir</button>
+<div id="girar-telefono">Gira el teléfono en horizontal<br>y colócalo en el visor Cardboard</div>
+<div id="aviso" role="status"></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

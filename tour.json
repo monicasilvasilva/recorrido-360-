@@ -1,0 +1,843 @@
+{
+  "titulo": "Recorrido virtual 360",
+  "subtitulo": "",
+  "inicio": "escena-sin-nombre",
+  "autorotar": true,
+  "escenas": [
+    {
+      "id": "escena-sin-nombre",
+      "titulo": "Escena sin nombre",
+      "grupo": "General",
+      "miniatura": "escenas/escena-sin-nombre/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/escena-sin-nombre",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "2d2f1c4",
+        "pesos": [
+          131995,
+          382816,
+          1077411,
+          1982486
+        ]
+      }
+    },
+    {
+      "id": "img-20260515-151345-00-019",
+      "titulo": "Escena 19",
+      "grupo": "General",
+      "miniatura": "escenas/img-20260515-151345-00-019/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/img-20260515-151345-00-019",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "3a2dbcf",
+        "pesos": [
+          120065,
+          360354,
+          1057803,
+          1976466
+        ]
+      }
+    },
+    {
+      "id": "img-20260515-151448-00-020",
+      "titulo": "Escena 20",
+      "grupo": "General",
+      "miniatura": "escenas/img-20260515-151448-00-020/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/img-20260515-151448-00-020",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "576cc4c",
+        "pesos": [
+          145006,
+          447691,
+          1281261,
+          2348097
+        ]
+      }
+    },
+    {
+      "id": "img-20260515-151651-00-021",
+      "titulo": "Escena 21",
+      "grupo": "General",
+      "miniatura": "escenas/img-20260515-151651-00-021/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/img-20260515-151651-00-021",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "2e83265",
+        "pesos": [
+          259697,
+          789556,
+          2257407,
+          4046458
+        ]
+      }
+    },
+    {
+      "id": "img-20260515-151728-00-022",
+      "titulo": "Escena 22",
+      "grupo": "General",
+      "miniatura": "escenas/img-20260515-151728-00-022/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/img-20260515-151728-00-022",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "4274978",
+        "pesos": [
+          282062,
+          851647,
+          2405939,
+          4286674
+        ]
+      }
+    },
+    {
+      "id": "img-20260515-151825-00-023",
+      "titulo": "Escena 23",
+      "grupo": "General",
+      "miniatura": "escenas/img-20260515-151825-00-023/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/img-20260515-151825-00-023",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "5166281",
+        "pesos": [
+          272401,
+          838306,
+          2427177,
+          4352215
+        ]
+      }
+    },
+    {
+      "id": "img-20260515-152047-00-024",
+      "titulo": "Escena 24",
+      "grupo": "General",
+      "miniatura": "escenas/img-20260515-152047-00-024/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/img-20260515-152047-00-024",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "fc0789c",
+        "pesos": [
+          102194,
+          306310,
+          892837,
+          1672720
+        ]
+      }
+    },
+    {
+      "id": "img-20260515-152141-00-025",
+      "titulo": "Escena 25",
+      "grupo": "General",
+      "miniatura": "escenas/img-20260515-152141-00-025/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [
+        {
+          "id": "psd7kn69",
+          "tipo": "escena",
+          "pitch": -9.14,
+          "yaw": 16.35,
+          "destino": "img-20260515-152223-00-026"
+        }
+      ],
+      "cubo": {
+        "ruta": "escenas/img-20260515-152141-00-025",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "5a7d6a8",
+        "pesos": [
+          145004,
+          449593,
+          1298176,
+          2386595
+        ]
+      }
+    },
+    {
+      "id": "img-20260515-152223-00-026",
+      "titulo": "Escena 26",
+      "grupo": "General",
+      "miniatura": "escenas/img-20260515-152223-00-026/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [
+        {
+          "id": "pu1src0y",
+          "tipo": "escena",
+          "destino": "img-20260515-152141-00-025",
+          "pitch": -9.14,
+          "yaw": -163.65
+        }
+      ],
+      "cubo": {
+        "ruta": "escenas/img-20260515-152223-00-026",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "27202c1",
+        "pesos": [
+          131923,
+          378563,
+          1066751,
+          1961621
+        ]
+      }
+    },
+    {
+      "id": "img-20260515-152328-00-027",
+      "titulo": "Escena 27",
+      "grupo": "General",
+      "miniatura": "escenas/img-20260515-152328-00-027/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/img-20260515-152328-00-027",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "83df7a9",
+        "pesos": [
+          169924,
+          509411,
+          1440083,
+          2630634
+        ]
+      }
+    },
+    {
+      "id": "img-20260515-152415-00-028",
+      "titulo": "Escena 28",
+      "grupo": "General",
+      "miniatura": "escenas/img-20260515-152415-00-028/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/img-20260515-152415-00-028",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "f6ac0c9",
+        "pesos": [
+          96299,
+          292193,
+          857164,
+          1617764
+        ]
+      }
+    },
+    {
+      "id": "img-20260515-152529-00-029",
+      "titulo": "Escena 29",
+      "grupo": "General",
+      "miniatura": "escenas/img-20260515-152529-00-029/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/img-20260515-152529-00-029",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "8158ec6",
+        "pesos": [
+          186504,
+          550640,
+          1522949,
+          2749144
+        ]
+      }
+    },
+    {
+      "id": "img-20260515-152602-00-030",
+      "titulo": "Escena 30",
+      "grupo": "General",
+      "miniatura": "escenas/img-20260515-152602-00-030/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/img-20260515-152602-00-030",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "f6689c0",
+        "pesos": [
+          102143,
+          297502,
+          851868,
+          1600746
+        ]
+      }
+    },
+    {
+      "id": "salon-cultural-centro",
+      "titulo": "Salón Cultural centro",
+      "grupo": "Salón cultural",
+      "miniatura": "escenas/salon-cultural-centro/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/salon-cultural-centro",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "88bb95c",
+        "pesos": [
+          179891,
+          554332,
+          1582033,
+          2863127
+        ]
+      }
+    },
+    {
+      "id": "descanso-escalera-tercer-cuarto-piso",
+      "titulo": "Descanso escalera tercer cuarto piso",
+      "grupo": "Tercer piso",
+      "miniatura": "escenas/descanso-escalera-tercer-cuarto-piso/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/descanso-escalera-tercer-cuarto-piso",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "425db4b",
+        "pesos": [
+          139825,
+          402375,
+          1138614,
+          2103545
+        ]
+      }
+    },
+    {
+      "id": "entrada-salon-cultural",
+      "titulo": "Entrada salón cultural",
+      "grupo": "Salón cultural",
+      "miniatura": "escenas/entrada-salon-cultural/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/entrada-salon-cultural",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "e943685",
+        "pesos": [
+          232726,
+          689306,
+          1935016,
+          3464385
+        ]
+      }
+    },
+    {
+      "id": "entrada-saolon-cultural-2",
+      "titulo": "Entrada salón cultural 2",
+      "grupo": "Salón cultural",
+      "miniatura": "escenas/entrada-saolon-cultural-2/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/entrada-saolon-cultural-2",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "eb373d1",
+        "pesos": [
+          234127,
+          692401,
+          1945541,
+          3481369
+        ]
+      }
+    },
+    {
+      "id": "pasillo-cuarto-piso-centro",
+      "titulo": "Pasillo cuarto piso centro",
+      "grupo": "Cuarto piso",
+      "miniatura": "escenas/pasillo-cuarto-piso-centro/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/pasillo-cuarto-piso-centro",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "79a7138",
+        "pesos": [
+          164890,
+          510084,
+          1475282,
+          2701759
+        ]
+      }
+    },
+    {
+      "id": "pasillo-cuarto-piso-rampa",
+      "titulo": "Pasillo cuarto piso rampa",
+      "grupo": "Cuarto piso",
+      "miniatura": "escenas/pasillo-cuarto-piso-rampa/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/pasillo-cuarto-piso-rampa",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "5d92d27",
+        "pesos": [
+          146481,
+          470054,
+          1387056,
+          2552378
+        ]
+      }
+    },
+    {
+      "id": "pasillo-cuarto-piso-sig-y-redes",
+      "titulo": "Pasillo cuarto piso SIG y redes",
+      "grupo": "Cuarto piso",
+      "miniatura": "escenas/pasillo-cuarto-piso-sig-y-redes/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/pasillo-cuarto-piso-sig-y-redes",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "4541240",
+        "pesos": [
+          126781,
+          390723,
+          1137812,
+          2112336
+        ]
+      }
+    },
+    {
+      "id": "pasillo-cuarto-psio-fondo",
+      "titulo": "Pasillo cuarto piso fondo",
+      "grupo": "Cuarto piso",
+      "miniatura": "escenas/pasillo-cuarto-psio-fondo/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/pasillo-cuarto-psio-fondo",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "6d69fa8",
+        "pesos": [
+          157962,
+          490011,
+          1419163,
+          2599239
+        ]
+      }
+    },
+    {
+      "id": "pasillo-psio-3-medio",
+      "titulo": "Pasillo piso 3 medio",
+      "grupo": "Tercer piso",
+      "miniatura": "escenas/pasillo-psio-3-medio/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/pasillo-psio-3-medio",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "6d002d7",
+        "pesos": [
+          175814,
+          520522,
+          1476016,
+          2687719
+        ]
+      }
+    },
+    {
+      "id": "pasillo-tercer-piso-rampa",
+      "titulo": "Pasillo tercer piso rampa",
+      "grupo": "Tercer piso",
+      "miniatura": "escenas/pasillo-tercer-piso-rampa/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/pasillo-tercer-piso-rampa",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "6ec840e",
+        "pesos": [
+          152113,
+          482873,
+          1407555,
+          2581915
+        ]
+      }
+    },
+    {
+      "id": "pasillo-tercer-piso-salon-301-y-302",
+      "titulo": "Pasillo tercer piso salón 301 y 302",
+      "grupo": "Tercer piso",
+      "miniatura": "escenas/pasillo-tercer-piso-salon-301-y-302/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/pasillo-tercer-piso-salon-301-y-302",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "5b89f7c",
+        "pesos": [
+          137040,
+          420862,
+          1222404,
+          2261359
+        ]
+      }
+    },
+    {
+      "id": "sala1",
+      "titulo": "Sala1",
+      "grupo": "General",
+      "miniatura": "escenas/sala1/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/sala1",
+        "tesela": 512,
+        "niveles": [
+          512
+        ],
+        "v": "da0bbb3",
+        "pesos": [
+          186378
+        ]
+      }
+    },
+    {
+      "id": "sala2",
+      "titulo": "Sala2",
+      "grupo": "General",
+      "miniatura": "escenas/sala2/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/sala2",
+        "tesela": 512,
+        "niveles": [
+          512
+        ],
+        "v": "c8d25b1",
+        "pesos": [
+          113589
+        ]
+      }
+    },
+    {
+      "id": "sala3",
+      "titulo": "Sala3",
+      "grupo": "General",
+      "miniatura": "escenas/sala3/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/sala3",
+        "tesela": 512,
+        "niveles": [
+          512
+        ],
+        "v": "ca22019",
+        "pesos": [
+          72132
+        ]
+      }
+    },
+    {
+      "id": "salon-301",
+      "titulo": "Salón 301",
+      "grupo": "Tercer piso",
+      "miniatura": "escenas/salon-301/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/salon-301",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "fcd7ec9",
+        "pesos": [
+          107032,
+          313014,
+          896774,
+          1687851
+        ]
+      }
+    },
+    {
+      "id": "salon-302",
+      "titulo": "Salón 302",
+      "grupo": "Tercer piso",
+      "miniatura": "escenas/salon-302/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/salon-302",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "f57e12d",
+        "pesos": [
+          102822,
+          298267,
+          850729,
+          1597886
+        ]
+      }
+    },
+    {
+      "id": "salon-405-2",
+      "titulo": "Salón 405 2",
+      "grupo": "Cuarto piso",
+      "miniatura": "escenas/salon-405-2/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/salon-405-2",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "47d7bba",
+        "pesos": [
+          154154,
+          441975,
+          1233759,
+          2250763
+        ]
+      }
+    },
+    {
+      "id": "salon-405",
+      "titulo": "Salón 405",
+      "grupo": "Cuarto piso",
+      "miniatura": "escenas/salon-405/mini.jpg",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 100,
+      "puntos": [],
+      "cubo": {
+        "ruta": "escenas/salon-405",
+        "tesela": 512,
+        "niveles": [
+          512,
+          1024,
+          2048,
+          3072
+        ],
+        "v": "471b878",
+        "pesos": [
+          152050,
+          435096,
+          1215874,
+          2218091
+        ]
+      }
+    }
+  ]
+}
