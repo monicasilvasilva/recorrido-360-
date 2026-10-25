@@ -521,6 +521,10 @@ document.addEventListener("keydown", ev => {
   motor.al.modo = alCambiarModo;
   motor.al.activar = activarPunto;
   motor.al.menuVR = alternarMenuVR;
+  motor.al.contexto = recuperado => {
+    if (!recuperado) return aviso("Recuperando la imagen…", 4000);
+    irA(estado.actualId, { forzar: true, vista: motor.modo === "normal" ? motor.vista : undefined });
+  };
   motor.al.clic = ({ yaw, pitch, punto }) => {
     if (ganchos.clic?.(yaw, pitch)) return;
     if (punto) activarPunto(punto);

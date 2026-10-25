@@ -1,7 +1,7 @@
 // Service worker: permite abrir el recorrido sin conexión (celular, gafas VR y PC).
 // - Código (html, js, css): primero la red (siempre actualizado); sin conexión, la copia guardada.
 // - Fotos y medios: primero lo guardado (rápido); si no está, de la red y se guarda.
-const APP = "recorrido-app-v1";
+const APP = "recorrido-app-v2";
 const DATOS = "recorrido-datos";   // lo descargado con el botón «Descargar» y lo ya visitado
 const ARCHIVOS_APP = [
   "./", "index.html", "css/estilos.css", "js/app.js", "js/motor.js", "js/lienzo.js", "js/offline.js",

@@ -8,6 +8,18 @@ const { degToRad: rad, radToDeg: grados, clamp } = THREE.MathUtils;
 const EJE_Y = new THREE.Vector3(0, 1, 0);
 const TIEMPO_MIRADA = 1600; // ms mirando un punto para activarlo (Cardboard)
 export const esMovil = matchMedia("(pointer: coarse)").matches || /Android|iPhone|iPad/i.test(navigator.userAgent);
+/** Celulares con poca memoria o pocos núcleos: menos teselas en memoria y menor resolución en VR. */
+export const equipoModesto = esMovil && ((navigator.deviceMemory || 4) <= 4 || (navigator.hardwareConcurrency || 4) <= 4);
+// Teselas finas que se mantienen en memoria de video (cada una ~1 MB) y nivel máximo en VR/Cardboard
+// En VR/Cardboard el máximo es 2K por cara (nivel 2): nítido con lentes y estable en celulares y Quest
+const PERFIL = !esMovil ? { teselas: 420, teselasVR: 110, nivelVR: 2, dpr: 2, dprVR: 1 }
+  : equipoModesto ? { teselas: 50, teselasVR: 44, nivelVR: 2, dpr: 1.25, dprVR: 1 }
+  : { teselas: 90, teselasVR: 70, nivelVR: 2, dpr: 1.5, dprVR: 1.5 };
+const ESPERA_TESELA = 8000;  // ms; si una foto no llega, se sigue sin ella en vez de quedar en negro
+// Decodificar los JPG fuera del hilo principal (ImageBitmap) evita que la imagen se congele al cambiar
+// de escena. Safari/iOS no soporta bien la opción de volteo, así que allí se usa el cargador normal.
+const USAR_BITMAP = typeof createImageBitmap === "function" && !/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);
+const SUBIDAS_POR_CUADRO = esMovil ? 2 : 6;  // texturas que se envían a la GPU en cada cuadro
 
 /** yaw: grados a la derecha; pitch: grados hacia arriba. yaw 0 = centro de la foto original. */
 export function vectorDesde(yaw, pitch, r = 1) {
@@ -41,6 +53,7 @@ class Panorama {
     this.porNivel = cubo.niveles.map(() => []);
     this.cola = [];
     this.activas = 0;
+    this.porSubir = [];  // mallas listas que esperan turno para entrar a la GPU
     cubo.niveles.forEach((tam, nivel) => {
       const n = Math.max(1, Math.round(tam / cubo.tesela));
       for (const cara of "fbudlr") for (let ty = 0; ty < n; ty++) for (let tx = 0; tx < n; tx++) {
@@ -56,7 +69,10 @@ class Panorama {
   }
 
   geometria(t) {
-    const v = [[t.a0, t.b0], [t.a1, t.b0], [t.a0, t.b1], [t.a1, t.b1]].flatMap(([a, b]) => DIR[t.cara](a, b).map(x => x * R_CUBO));
+    // Los niveles finos quedan un poco más cerca: la prueba de profundidad descarta los gruesos que
+    // tapan, así cada píxel se pinta una sola vez (antes 3-4 veces, y en VR el doble)
+    const r = R_CUBO * (1 - 0.004 * t.nivel);
+    const v = [[t.a0, t.b0], [t.a1, t.b0], [t.a0, t.b1], [t.a1, t.b1]].flatMap(([a, b]) => DIR[t.cara](a, b).map(x => x * r));
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.Float32BufferAttribute(v, 3));
     g.setAttribute("uv", new THREE.Float32BufferAttribute([0, 1, 1, 1, 0, 0, 1, 0], 2));
@@ -66,21 +82,32 @@ class Panorama {
 
   cargar(t) {
     t.estado = 1;
-    return new Promise(listo => this.cargador.load(t.url, tex => {
-      if (this.destruido) { tex.dispose(); return listo(); }
+    return new Promise(listo => {
+      const limite = setTimeout(() => { if (t.estado === 1) { t.estado = 3; listo(); } }, ESPERA_TESELA);
+      this.cargador.load(t.url, dato => {
+      clearTimeout(limite);
+      const tex = dato.isTexture ? dato : new THREE.Texture(dato);
+      if (this.destruido || t.estado !== 1) { liberarTextura(tex); return listo(); }
+      if (!dato.isTexture) { tex.flipY = false; tex.needsUpdate = true; }  // el bitmap ya viene volteado
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.minFilter = THREE.LinearFilter;
       tex.generateMipmaps = false;
-      const m = new THREE.Mesh(this.geometria(t), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide, depthTest: false, depthWrite: false }));
-      m.renderOrder = t.nivel;  // los niveles más finos se dibujan encima
-      this.grupo.add(m);
-      Object.assign(t, { mesh: m, estado: 2, uso: performance.now() });
+      const m = new THREE.Mesh(this.geometria(t), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
+      m.renderOrder = 10 - t.nivel;  // de la más fina a la más gruesa: lo tapado ni se pinta
+      this.porSubir.push(m);
+      Object.assign(t, { mesh: m, estado: 2, uso: performance.now(), error: false });
       this.alCambiar();
       listo();
-    }, undefined, () => { t.estado = 3; listo(); }));
+      }, undefined, () => { clearTimeout(limite); if (t.estado === 1) { t.estado = 3; t.error = true; } listo(); });
+    });
   }
 
-  cargarBase() { return Promise.all(this.porNivel[0].map(t => this.cargar(t))); }
+  /** Las 6 caras básicas; las que fallan se reintentan una vez. */
+  async cargarBase() {
+    await Promise.all(this.porNivel[0].map(t => this.cargar(t)));
+    const fallidas = this.porNivel[0].filter(t => t.estado === 3 && t.error);  // por tiempo no se reintenta
+    if (fallidas.length && !this.destruido) await Promise.all(fallidas.map(t => this.cargar(t)));
+  }
 
   /** Pide las teselas visibles hasta nivelMax, de la más gruesa y central a la más fina. */
   actualizar(dir, semiFov, nivelMax, maxTeselas) {
@@ -117,10 +144,18 @@ class Panorama {
     }
   }
 
+  /** Agrega a la escena unas pocas mallas por cuadro para no trabar el dibujo. */
+  integrar(max) {
+    let n = 0;
+    while (n < max && this.porSubir.length) { this.grupo.add(this.porSubir.shift()); n++; }
+    return n;
+  }
+
   liberar(t) {
     this.grupo.remove(t.mesh);
+    this.porSubir = this.porSubir.filter(m => m !== t.mesh);
     t.mesh.geometry.dispose();
-    t.mesh.material.map.dispose();
+    liberarTextura(t.mesh.material.map);
     t.mesh.material.dispose();
     t.mesh = null;
     t.estado = 0;
@@ -139,6 +174,11 @@ class Panorama {
   }
 }
 
+function liberarTextura(tex) {
+  tex.dispose();
+  tex.image?.close?.();  // ImageBitmap: libera la memoria de inmediato
+}
+
 function desechar(obj) {
   obj.traverse(o => {
     o.geometry?.dispose();
@@ -152,8 +192,10 @@ export class Motor {
   constructor(contenedor) {
     this.contenedor = contenedor;
     this.al = {};  // callbacks: activar(punto), clic({yaw,pitch,punto}), vista(), modo(modo), menuVR(), interaccion()
-    const r = this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-    r.setPixelRatio(Math.min(devicePixelRatio, 2));
+    const r = this.renderer = new THREE.WebGLRenderer({ antialias: !esMovil, powerPreference: "high-performance" });
+    r.setPixelRatio(Math.min(devicePixelRatio, PERFIL.dpr));
+    // En celulares WebXR dibuja a la resolución nativa (muy alta); un poco menos basta con lentes
+    if (esMovil) r.xr.setFramebufferScaleFactor?.(equipoModesto ? 0.7 : 0.85);
     r.xr.enabled = true;
     r.xr.setReferenceSpaceType("local");
     r.xr.setFoveation?.(0.3);
@@ -162,7 +204,7 @@ export class Motor {
 
     this.escena3d = new THREE.Scene();
     this.escena3d.background = new THREE.Color(0x0d1117);
-    this.camara = new THREE.PerspectiveCamera(75, 1, 0.01, 100);
+    this.camara = new THREE.PerspectiveCamera(75, 1, 0.05, 100);
     this.camara.rotation.order = "YXZ";
     this.escena3d.add(this.camara);
     this.mundo = new THREE.Group();
@@ -171,7 +213,9 @@ export class Motor {
     this.mundo.add(this.capaPuntos, this.capaBanners);
     this.escena3d.add(this.mundo);
 
-    this.cargador = new THREE.TextureLoader();
+    this.cargador = USAR_BITMAP
+      ? new THREE.ImageBitmapLoader().setOptions({ imageOrientation: "flipY", premultiplyAlpha: "none" })
+      : new THREE.TextureLoader();
     this.raycaster = new THREE.Raycaster();
     this.yaw = 0; this.pitch = 0; this.hfov = 100;
     this.modo = "normal";              // normal | giroscopio | cardboard | vr
@@ -190,16 +234,28 @@ export class Motor {
     new ResizeObserver(() => this.redimensionar()).observe(contenedor);
     this.redimensionar();
     addEventListener("orientationchange", () => { this.sucio = true; });
-    r.setAnimationLoop(t => this.cuadro(t));
+    // Si el celular se queda sin memoria de video, el navegador pierde el contexto WebGL (pantalla negra).
+    // Se pide recuperarlo y se vuelve a cargar la escena.
+    r.domElement.addEventListener("webglcontextlost", ev => { ev.preventDefault(); this.contextoPerdido = true; this.al.contexto?.(false); });
+    r.domElement.addEventListener("webglcontextrestored", () => { this.contextoPerdido = false; this.al.contexto?.(true); });
+    r.setAnimationLoop(t => {
+      if (this.contextoPerdido) return;
+      try { this.cuadro(t); }
+      catch (e) { if (!this.errorMostrado) { this.errorMostrado = true; console.error("Error al dibujar:", e); } }
+    });
   }
 
   /* ---------- escena ---------- */
   async cargarEscena(e, { vista } = {}) {
-    this.panorama?.detener();
+    const anterior = this.panorama;
+    anterior?.detener();
+    if (anterior) await this.fundir(1, 180);
+    // Libera la escena anterior ANTES de cargar la nueva: en celulares modestos no caben las dos
+    if (anterior) { anterior.destruir(); anterior.grupo.removeFromParent(); this.panorama = null; }
+    this.cerrarMenuVR();
     const nuevo = new Panorama(e.cubo, this.cargador, () => { this.sucio = true; });
-    const fundido = this.panorama ? this.fundir(1, 180) : Promise.resolve();
-    await Promise.all([nuevo.cargarBase(), fundido]);
-    if (this.panorama) { this.panorama.destruir(); this.panorama.grupo.removeFromParent(); }
+    await nuevo.cargarBase();
+    nuevo.integrar(Infinity);
     this.panorama = nuevo;
     this.mundo.add(nuevo.grupo);
     this.cerrarPanel3D();
@@ -220,8 +276,11 @@ export class Motor {
   }
 
   fundir(hasta, ms) {
+    this.animFundido?.listo();
     return new Promise(listo => {
       this.animFundido = { desde: this.fundido.material.opacity, hasta, t0: performance.now(), ms, listo };
+      // por si el ciclo de dibujo está en pausa (pestaña oculta), no quedar esperando
+      setTimeout(() => { if (this.animFundido?.listo === listo) { this.fundido.material.opacity = hasta; this.fundido.visible = hasta > 0; this.animFundido = null; listo(); } }, ms + 1500);
     });
   }
 
@@ -624,6 +683,8 @@ export class Motor {
   /* ---------- modos ---------- */
   cambiarModo(modo) {
     this.modo = modo;
+    // En Cardboard se dibuja dos veces: menos píxeles para que el celular no se sature
+    this.renderer.setPixelRatio(Math.min(devicePixelRatio, modo === "cardboard" ? PERFIL.dprVR : PERFIL.dpr));
     const inmersivo = modo === "cardboard" || modo === "vr";
     this.capaPuntos.visible = inmersivo;
     this.reticula.visible = modo === "cardboard";
@@ -689,6 +750,8 @@ export class Motor {
       animando = true;
     }
 
+    if (this.panorama?.porSubir.length && this.panorama.integrar(SUBIDAS_POR_CUADRO)) this.sucio = true;
+
     // Teselas: nivel según cuántos píxeles por radián muestra la pantalla
     if (this.panorama && ahora - (this.ultimoTeselado || 0) > 120) {
       this.ultimoTeselado = ahora;
@@ -704,8 +767,11 @@ export class Motor {
       const tamanos = this.panorama.niveles;
       let nivel = tamanos.findIndex(n => n / 2 >= pxRad * 0.85);
       if (nivel < 0) nivel = tamanos.length - 1;
-      nivel = Math.min(nivel, this.nivelMaximo);
-      const pendientes = this.panorama.actualizar(dir, semiFov, nivel, esMovil || xr ? 140 : 420);
+      const inmersivo = xr || this.modo === "cardboard";
+      // Con lentes la imagen se amplía: en VR/Cardboard al menos el nivel 1, aunque cada ojo tenga pocos píxeles
+      if (inmersivo) nivel = Math.max(nivel, 1);
+      nivel = Math.min(nivel, this.nivelMaximo, inmersivo ? PERFIL.nivelVR : Infinity);
+      const pendientes = this.panorama.actualizar(dir, semiFov, nivel, inmersivo ? PERFIL.teselasVR : PERFIL.teselas);
       if (pendientes) this.sucio = true;
     }
 
