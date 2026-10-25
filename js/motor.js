@@ -97,7 +97,7 @@ class Panorama {
       }
     }
     pendientes.sort((x, y) => x[0] - y[0] || x[1] - y[1]);
-    this.cola = pendientes.map(p => p[2]);
+    this.cola = this.detenido ? [] : pendientes.map(p => p[2]);
     this.bombear();
     const cargadas = this.teselas.filter(t => t.nivel > 0 && t.estado === 2);
     if (cargadas.length > maxTeselas) {
@@ -108,6 +108,7 @@ class Panorama {
   }
 
   bombear() {
+    if (this.detenido) return;
     while (this.activas < 6 && this.cola.length) {
       const t = this.cola.shift();
       if (t.estado !== 0) continue;
@@ -125,7 +126,14 @@ class Panorama {
     t.estado = 0;
   }
 
+  /** Deja de pedir teselas (al salir de la escena) para no competir con la siguiente. */
+  detener() {
+    this.detenido = true;
+    this.cola = [];
+  }
+
   destruir() {
+    this.detener();
     this.destruido = true;
     this.teselas.forEach(t => t.mesh && this.liberar(t));
   }
@@ -187,6 +195,7 @@ export class Motor {
 
   /* ---------- escena ---------- */
   async cargarEscena(e, { vista } = {}) {
+    this.panorama?.detener();
     const nuevo = new Panorama(e.cubo, this.cargador, () => { this.sucio = true; });
     const fundido = this.panorama ? this.fundir(1, 180) : Promise.resolve();
     await Promise.all([nuevo.cargarBase(), fundido]);

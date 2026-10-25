@@ -62,14 +62,19 @@ export async function irA(id, opciones = {}) {
 }
 
 const precargadas = new Set();
+let tPrecarga;
 function precargarVecinas(e) {
-  const i = estado.tour.escenas.indexOf(e);
-  [...e.puntos.filter(p => p.tipo === "escena").map(p => p.destino), estado.tour.escenas[i + 1]?.id]
-    .map(escena).filter(Boolean).forEach(d => {
-      if (precargadas.has(d.id)) return;
-      precargadas.add(d.id);
-      for (const c of "fbudlr") new Image().src = urlTesela(d.cubo, 0, c, 0, 0);
-    });
+  // Espera a que la escena actual tenga su detalle antes de adelantar las vecinas (máx. 3)
+  clearTimeout(tPrecarga);
+  tPrecarga = setTimeout(() => {
+    if (estado.actualId !== e.id) return;
+    const i = estado.tour.escenas.indexOf(e);
+    [...e.puntos.filter(p => p.tipo === "escena").map(p => p.destino), estado.tour.escenas[i + 1]?.id]
+      .map(escena).filter(d => d && !precargadas.has(d.id)).slice(0, 3).forEach(d => {
+        precargadas.add(d.id);
+        for (const c of "fbudlr") new Image().src = urlTesela(d.cubo, 0, c, 0, 0);
+      });
+  }, 2500);
 }
 
 function moverEscena(paso) {
