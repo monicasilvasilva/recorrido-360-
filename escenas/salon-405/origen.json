@@ -1,1 +1,1 @@
-{"archivo": "salon 405.jpg", "tam": 14267279, "mod": 1779759655, "tesela": 512, "calidad": 85, "v": 2, "cubo": {"ruta": "escenas/salon-405", "tesela": 512, "niveles": [512, 1024, 2048, 3072]}}
+{"archivo": "salon 405.jpg", "tam": 14267279, "mod": 1779759655, "tesela": 512, "calidad": 85, "v": 3, "cubo": {"ruta": "escenas/salon-405", "tesela": 512, "niveles": [512, 1024, 1536, 2048, 3072], "v": "8d00536", "pesos": [152050, 435096, 797619, 1215874, 2218091]}}

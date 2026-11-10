@@ -1,1 +1,1 @@
-{"archivo": "pasillo cuarto piso centro.jpg", "tam": 15976969, "mod": 1779759649, "tesela": 512, "calidad": 85, "v": 2, "cubo": {"ruta": "escenas/pasillo-cuarto-piso-centro", "tesela": 512, "niveles": [512, 1024, 2048, 3072]}}
+{"archivo": "pasillo cuarto piso centro.jpg", "tam": 15976969, "mod": 1779759649, "tesela": 512, "calidad": 85, "v": 3, "cubo": {"ruta": "escenas/pasillo-cuarto-piso-centro", "tesela": 512, "niveles": [512, 1024, 1536, 2048, 3072], "v": "ae4b387", "pesos": [164890, 510084, 956984, 1475282, 2701759]}}

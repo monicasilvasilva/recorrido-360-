@@ -190,3 +190,8 @@ body.colocando #visor canvas { cursor: crosshair; }
     border-radius: 16px 16px 0 0; transform: translateY(100%); }
   #editor.abierto { transform: none; }
 }
+
+/* selector de calidad del visor */
+.calidad-visor { height: 44px; border-radius: 12px; padding: 0 10px; font: inherit; font-size: 14px;
+  background: var(--vidrio); color: var(--texto); border: 1px solid var(--borde); box-shadow: var(--sombra);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }

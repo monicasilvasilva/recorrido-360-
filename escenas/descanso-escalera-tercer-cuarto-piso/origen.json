@@ -1,1 +1,1 @@
-{"archivo": "descanso escalera tercer cuarto piso .jpg", "tam": 14106897, "mod": 1779759676, "tesela": 512, "calidad": 85, "v": 2, "cubo": {"ruta": "escenas/descanso-escalera-tercer-cuarto-piso", "tesela": 512, "niveles": [512, 1024, 2048, 3072]}}
+{"archivo": "descanso escalera tercer cuarto piso .jpg", "tam": 14106897, "mod": 1779759676, "tesela": 512, "calidad": 85, "v": 3, "cubo": {"ruta": "escenas/descanso-escalera-tercer-cuarto-piso", "tesela": 512, "niveles": [512, 1024, 1536, 2048, 3072], "v": "65ec626", "pesos": [139825, 402375, 744756, 1138614, 2103545]}}

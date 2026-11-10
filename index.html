@@ -30,6 +30,9 @@
 </div>
 
 <div id="controles">
+  <select id="calidad-visor" class="calidad-visor" title="Calidad de imagen" aria-label="Calidad de imagen">
+    <option value="hd">HD</option><option value="fhd">Full HD</option><option value="2k">2K</option>
+  </select>
   <button class="btn-ico" id="b-menu" title="Todas las escenas (M)" aria-label="Todas las escenas">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
   <button class="btn-ico oculto" id="b-vr" title="Ver en gafas VR (Meta Quest…)" aria-label="Ver en gafas VR"><span class="txt">VR</span></button>
@@ -88,10 +91,12 @@
     <p>Guarda el recorrido en este dispositivo (celular, gafas VR o PC) para verlo <b>sin internet</b>.</p>
     <div id="descarga-estado" class="estado-descarga"></div>
     <div id="descarga-opciones">
-      <label class="opcion"><input type="radio" name="calidad" value="estandar" checked>
-        <span><b>Estándar</b> · <span data-peso="estandar"></span><br><span class="nota">Recomendada para celular y gafas VR</span></span></label>
-      <label class="opcion"><input type="radio" name="calidad" value="maxima">
-        <span><b>Máxima</b> · <span data-peso="maxima"></span><br><span class="nota">Calidad original con zoom, ocupa más</span></span></label>
+      <label class="opcion"><input type="radio" name="calidad" value="hd">
+        <span><b>HD</b> · <span data-peso="hd"></span><br><span class="nota">Celulares viejos y gafas Cardboard sencillas</span></span></label>
+      <label class="opcion"><input type="radio" name="calidad" value="fhd">
+        <span><b>Full HD</b> · <span data-peso="fhd"></span><br><span class="nota">Celulares de gama media</span></span></label>
+      <label class="opcion"><input type="radio" name="calidad" value="2k" checked>
+        <span><b>2K</b> · <span data-peso="2k"></span><br><span class="nota">PC, Meta Quest y celulares nuevos. La más nítida</span></span></label>
       <p class="nota" id="descarga-espacio"></p>
     </div>
     <div id="descarga-progreso" class="oculto"><div class="progreso"><div></div></div><p class="nota" id="descarga-texto"></p></div>

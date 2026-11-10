@@ -10,11 +10,20 @@ const TIEMPO_MIRADA = 1600; // ms mirando un punto para activarlo (Cardboard)
 export const esMovil = matchMedia("(pointer: coarse)").matches || /Android|iPhone|iPad/i.test(navigator.userAgent);
 /** Celulares con poca memoria o pocos núcleos: menos teselas en memoria y menor resolución en VR. */
 export const equipoModesto = esMovil && ((navigator.deviceMemory || 4) <= 4 || (navigator.hardwareConcurrency || 4) <= 4);
-// Teselas finas que se mantienen en memoria de video (cada una ~1 MB) y nivel máximo en VR/Cardboard
-// En VR/Cardboard el máximo es 2K por cara (nivel 2): nítido con lentes y estable en celulares y Quest
-const PERFIL = !esMovil ? { teselas: 420, teselasVR: 110, nivelVR: 2, dpr: 2, dprVR: 1 }
-  : equipoModesto ? { teselas: 50, teselasVR: 44, nivelVR: 2, dpr: 1.25, dprVR: 1 }
-  : { teselas: 90, teselasVR: 70, nivelVR: 2, dpr: 1.5, dprVR: 1.5 };
+// Calidades: tamaño máximo de cada cara en píxeles. Las 3 versiones se eligen solas según el equipo
+// y el usuario puede cambiarlas en el visor; también se usan para la descarga sin conexión.
+export const CALIDADES = { hd: 1024, fhd: 1536, "2k": 2048 };
+export const ETIQUETAS_CALIDAD = { hd: "HD", fhd: "Full HD", "2k": "2K" };
+// Teselas finas que se mantienen en memoria de video (cada una ~1 MB)
+const PERFIL = !esMovil ? { teselas: 420, teselasVR: 110, dpr: 2, dprVR: 1 }
+  : equipoModesto ? { teselas: 50, teselasVR: 44, dpr: 1.25, dprVR: 1 }
+  : { teselas: 90, teselasVR: 70, dpr: 1.5, dprVR: 1.5 };
+/** Índice del nivel más grande que no pasa de `px` por cara (0 si ninguno). */
+export function indiceHasta(niveles, px) {
+  let i = 0;
+  niveles.forEach((n, k) => { if (n <= px) i = k; });
+  return i;
+}
 const ESPERA_TESELA = 8000;  // ms; si una foto no llega, se sigue sin ella en vez de quedar en negro
 // Decodificar los JPG fuera del hilo principal (ImageBitmap) evita que la imagen se congele al cambiar
 // de escena. Safari/iOS no soporta bien la opción de volteo, así que allí se usa el cargador normal.
@@ -225,7 +234,7 @@ export class Motor {
     this.inercia = { yaw: 0, pitch: 0 };
     this.sucio = true;
     this.tokenPuntos = 0;
-    this.nivelMaximo = Infinity;
+    this.topePx = CALIDADES["2k"];  // tamaño máximo por cara; app.js lo ajusta según la calidad elegida
 
     this.crearFundido();
     this.crearReticula();
@@ -777,7 +786,7 @@ export class Motor {
       const inmersivo = xr || this.modo === "cardboard";
       // Con lentes la imagen se amplía: en VR/Cardboard al menos el nivel 1, aunque cada ojo tenga pocos píxeles
       if (inmersivo) nivel = Math.max(nivel, 1);
-      nivel = Math.min(nivel, this.nivelMaximo, inmersivo ? PERFIL.nivelVR : Infinity);
+      nivel = Math.min(nivel, indiceHasta(tamanos, this.topePx));
       const pendientes = this.panorama.actualizar(dir, semiFov, nivel, inmersivo ? PERFIL.teselasVR : PERFIL.teselas);
       if (pendientes) this.sucio = true;
     }

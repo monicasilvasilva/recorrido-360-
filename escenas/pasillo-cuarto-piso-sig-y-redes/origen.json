@@ -1,1 +1,1 @@
-{"archivo": "pasillo cuarto piso sig y redes.jpg", "tam": 14204598, "mod": 1779759670, "tesela": 512, "calidad": 85, "v": 2, "cubo": {"ruta": "escenas/pasillo-cuarto-piso-sig-y-redes", "tesela": 512, "niveles": [512, 1024, 2048, 3072]}}
+{"archivo": "pasillo cuarto piso sig y redes.jpg", "tam": 14204598, "mod": 1779759670, "tesela": 512, "calidad": 85, "v": 3, "cubo": {"ruta": "escenas/pasillo-cuarto-piso-sig-y-redes", "tesela": 512, "niveles": [512, 1024, 1536, 2048, 3072], "v": "a06c79f", "pesos": [126781, 390723, 734555, 1137812, 2112336]}}

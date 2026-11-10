@@ -1,1 +1,1 @@
-{"archivo": "pasillo tercer piso rampa.jpg", "tam": 15609276, "mod": 1779759690, "tesela": 512, "calidad": 85, "v": 2, "cubo": {"ruta": "escenas/pasillo-tercer-piso-rampa", "tesela": 512, "niveles": [512, 1024, 2048, 3072]}}
+{"archivo": "pasillo tercer piso rampa.jpg", "tam": 15609276, "mod": 1779759690, "tesela": 512, "calidad": 85, "v": 3, "cubo": {"ruta": "escenas/pasillo-tercer-piso-rampa", "tesela": 512, "niveles": [512, 1024, 1536, 2048, 3072], "v": "2d12e01", "pesos": [152113, 482873, 910285, 1407555, 2581915]}}

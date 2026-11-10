@@ -1,12 +1,11 @@
 // Descarga del recorrido al dispositivo (celular, gafas VR o PC) para verlo sin conexión.
 // Guarda las teselas y medios en el almacenamiento del navegador (Cache Storage); el
 // service worker (sw.js) los entrega cuando no hay internet.
-import { urlTesela } from "./motor.js";
+import { urlTesela, CALIDADES } from "./motor.js";
 
 const DATOS = "recorrido-datos";
 const CLAVE = "recorrido360-descarga";
 const CONCURRENCIA = 6;
-export const CALIDADES = { estandar: 2, maxima: 99 };  // nivel máximo de teselas (2 = 2048 px por cara)
 const ARCHIVOS_APP = ["./", "index.html", "css/estilos.css", "js/app.js", "js/motor.js", "js/lienzo.js", "js/offline.js",
   "vendor/three.module.min.js", "manifest.webmanifest", "tour.json", "iconos/icono-192.png", "iconos/icono-512.png"];
 
@@ -19,7 +18,7 @@ export function registrar() {
 
 /** Lista de archivos y peso aproximado para una calidad. */
 export function listaArchivos(tour, calidad) {
-  const nivelMax = CALIDADES[calidad] ?? 2;
+  const px = CALIDADES[calidad] ?? CALIDADES["2k"];
   const urls = new Set();
   let bytes = 0;
   const medio = u => { if (u && !/^[a-z]+:/i.test(u)) urls.add(u); };
@@ -30,7 +29,7 @@ export function listaArchivos(tour, calidad) {
     const c = e.cubo;
     if (!c) continue;
     c.niveles.forEach((tam, nivel) => {
-      if (nivel > nivelMax) return;
+      if (tam > px) return;
       const n = Math.max(1, Math.round(tam / c.tesela));
       for (const cara of "fbudlr") for (let ty = 0; ty < n; ty++) for (let tx = 0; tx < n; tx++) urls.add(urlTesela(c, nivel, cara, ty, tx));
       bytes += c.pesos?.[nivel] || 0;
@@ -39,8 +38,14 @@ export function listaArchivos(tour, calidad) {
   return { urls: [...urls].map(u => new URL(u, location.href).href), bytes };
 }
 
+// Nombres de calidad de la versión anterior (estándar y máxima) → la calidad más parecida
+const LEGADO = { estandar: "2k", maxima: "2k" };
 export function guardado() {
-  try { return JSON.parse(localStorage.getItem(CLAVE)) || null; } catch { return null; }
+  try {
+    const g = JSON.parse(localStorage.getItem(CLAVE)) || null;
+    if (g && LEGADO[g.calidad]) g.calidad = LEGADO[g.calidad];
+    return g;
+  } catch { return null; }
 }
 
 /** ¿Qué hay guardado y qué falta? (p. ej. si se agregaron escenas después de descargar) */
@@ -97,12 +102,10 @@ export async function descargar(tour, calidad, alProgreso, señal) {
   }
   await Promise.all(Array.from({ length: CONCURRENCIA }, trabajador));
   if (señal?.aborted) return { cancelado: true };
-  // Si se bajó a calidad estándar, libera el espacio de las teselas más finas
-  const nivelMax = CALIDADES[calidad] ?? 2;
-  for (const r of await cache.keys()) {
-    const m = /\/escenas\/[^/]+\/(\d+)\//.exec(new URL(r.url).pathname);
-    if (m && +m[1] > nivelMax) await cache.delete(r);
-  }
+  // Libera lo que ya no hace falta para esta calidad (teselas de otra calidad o versiones anteriores)
+  const { urls: vigentes } = listaArchivos(tour, calidad);
+  const validas = new Set([...app, ...vigentes]);
+  for (const r of await cache.keys()) if (!validas.has(r.url)) await cache.delete(r);
   localStorage.setItem(CLAVE, JSON.stringify({ calidad, fecha: Date.now() }));
   return { errores, bytes };
 }

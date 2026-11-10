@@ -1,6 +1,6 @@
 // Recorrido 360: interfaz, navegación, audios y banners. El editor se carga aparte (editor.js) solo con ?editar.
 import * as THREE from "three";
-import { Motor, R_PUNTO, vectorDesde, esMovil, urlTesela } from "./motor.js";
+import { Motor, R_PUNTO, vectorDesde, esMovil, equipoModesto, urlTesela, CALIDADES, ETIQUETAS_CALIDAD } from "./motor.js";
 import { ICONOS } from "./lienzo.js";
 import * as offline from "./offline.js";
 
@@ -380,27 +380,59 @@ $("#b-instalar").onclick = async () => {
 
 const calidadElegida = () => document.querySelector("input[name=calidad]:checked").value;
 
+/* ---------- calidad de imagen (HD / Full HD / 2K) ---------- */
+const CLAVE_CALIDAD = "recorrido360-calidad";
+/** Calidad sugerida según el equipo: Quest, PC y celulares nuevos → 2K; celular de pantalla
+ *  pequeña o con poca memoria (gafas Cardboard viejas) → HD; el resto → Full HD. */
+function calidadSugerida() {
+  if (!esMovil || offline.esQuest()) return "2k";
+  const pixeles = Math.max(screen.width, screen.height) * devicePixelRatio;
+  if (equipoModesto || pixeles <= 1280) return "hd";
+  if (pixeles <= 1920) return "fhd";
+  return "2k";
+}
+function calidadVisor() {
+  let guardada = null;
+  try { guardada = localStorage.getItem(CLAVE_CALIDAD); } catch {}
+  return CALIDADES[guardada] ? guardada : calidadSugerida();
+}
+/** Ajusta el tope de teselas del visor. Sin internet solo se usa lo que quedó guardado. */
+function aplicarCalidad() {
+  const elegida = calidadVisor();
+  let tope = CALIDADES[elegida];
+  const g = offline.guardado();
+  if (!navigator.onLine && g && CALIDADES[g.calidad]) tope = Math.min(tope, CALIDADES[g.calidad]);
+  if (motor) motor.topePx = tope;
+  const sel = $("#calidad-visor");
+  if (sel) sel.value = elegida;
+}
+$("#calidad-visor").onchange = e => {
+  try { localStorage.setItem(CLAVE_CALIDAD, e.target.value); } catch {}
+  aplicarCalidad();
+  aviso(`Calidad de imagen: ${ETIQUETAS_CALIDAD[e.target.value]}`, 2500);
+};
+
 async function actualizarDescarga() {
   if (!offline.disponible()) {
     $("#sec-guardar").classList.add("oculto");
     $("#sin-soporte").classList.remove("oculto");
     return;
   }
-  for (const c of Object.keys(offline.CALIDADES))
+  for (const c of Object.keys(CALIDADES))
     document.querySelector(`[data-peso="${c}"]`).textContent = mb(offline.listaArchivos(estado.tour, c).bytes);
   const e = estadoOffline = await offline.estado(estado.tour);
   const el = $("#descarga-estado");
   el.className = "estado-descarga" + (e.descargado && !e.faltan ? " ok" : "");
   el.textContent = !e.descargado ? ""
     : e.faltan ? `Hay contenido nuevo: faltan ${e.faltan} archivos. Pulsa «Actualizar».`
-    : `✓ Guardado en este dispositivo (calidad ${e.calidad === "maxima" ? "máxima" : "estándar"}). Funciona sin internet.`;
+    : `✓ Guardado en este dispositivo (calidad ${ETIQUETAS_CALIDAD[e.calidad]}). Funciona sin internet.`;
   if (e.descargado && !descargaEnCurso) document.querySelector(`input[name=calidad][value="${e.calidad}"]`).checked = true;
   botonDescarga();
   $("#b-borrar-descarga").classList.toggle("oculto", !e.descargado || !!descargaEnCurso);
   $("#b-descargar").classList.toggle("listo", e.descargado && !e.faltan);
   const esp = await offline.espacio();
   $("#descarga-espacio").textContent = esp ? `Espacio disponible: ${mb(esp.libre)}` : "";
-  aplicarNivelSinConexion();
+  aplicarCalidad();
 }
 
 function botonDescarga() {
@@ -411,13 +443,8 @@ function botonDescarga() {
 }
 document.querySelectorAll("input[name=calidad]").forEach(r => r.addEventListener("change", botonDescarga));
 
-// Sin internet y con descarga estándar, no se piden teselas que no están guardadas
-function aplicarNivelSinConexion() {
-  const g = offline.guardado();
-  if (motor) motor.nivelMaximo = !navigator.onLine && g ? offline.CALIDADES[g.calidad] : Infinity;
-}
-addEventListener("online", aplicarNivelSinConexion);
-addEventListener("offline", () => { aplicarNivelSinConexion(); aviso("Sin conexión: usando la copia guardada"); });
+addEventListener("online", aplicarCalidad);
+addEventListener("offline", () => { aplicarCalidad(); aviso("Sin conexión: usando la copia guardada"); });
 
 $("#b-iniciar-descarga").onclick = async () => {
   const calidad = calidadElegida();
@@ -517,6 +544,7 @@ document.addEventListener("keydown", ev => {
     return $("#cargando").classList.add("listo");
   }
   motor = new Motor($("#visor"));
+  aplicarCalidad();
   motor.al.vista = posicionarPuntos;
   motor.al.modo = alCambiarModo;
   motor.al.activar = activarPunto;
